@@ -20,7 +20,7 @@ export function DashboardTitle() {
     >
       <CardTitle
         className={cn(
-          "transform inline-flex items-center gap-1 transition-all duration-500 delay-100 text-2xl font-bold tracking-tight",
+          "transform text-primary inline-flex items-center gap-1 transition-all duration-500 delay-100 text-2xl font-bold tracking-tight",
           isLoading ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
         )}
       >

@@ -32,7 +32,7 @@ export function Dashboard() {
     useProtocolStore();
 
   const customersMap = customers.reduce((acc, customer) => {
-    acc[customer.id] = `${customer.name} ${customer.lastName}`;
+    acc[customer.id] = `${customer.first_name} ${customer.last_name}`;
     return acc;
   }, {} as Record<string, string>);
 

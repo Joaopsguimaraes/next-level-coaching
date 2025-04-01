@@ -3,14 +3,14 @@ import { CustomerStatus } from "./customer-status";
 export interface Customer {
   id: string;
   first_name: string;
-  last_name: string;
+  last_name?: string;
   nickname?: string;
   email: string;
   document?: string;
   phone?: string;
   address?: string;
-  city?: string;
-  uf?: string;
+  city: string;
+  uf: string;
   zip?: string;
   country?: string;
   status: CustomerStatus;

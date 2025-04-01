@@ -23,7 +23,7 @@ export function EmptyList({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
       className={cn(
-        "flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-gray-100 shadow-sm",
+        "flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-background rounded-lg border dark:border-border border-gray-100 shadow-sm",
         className
       )}
     >

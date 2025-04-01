@@ -17,7 +17,6 @@ import {
   createCustomerSchema,
 } from "@/schemas/customer/createCustomer";
 import { useCustomerStore } from "@/store/useCustomer";
-import { Customer } from "@/types";
 import { applyPhoneMask } from "@/utils/apply-phone-mask";
 import { applyCPFMask } from "@/utils/apply-cpf-mask";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,37 +29,53 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
 import { AddressForm } from "./AddressForm";
+import { v4 as uuidv4 } from "uuid";
 
 interface CustomerFormProps {
   title: string;
   description: string;
-  customer?: Customer;
+  customerId?: string;
   onSuccess?: () => void;
 }
 
 export function CustomerForm({
   title,
   description,
-  customer,
+  customerId,
   onSuccess,
 }: CustomerFormProps) {
   const router = useRouter();
-  const { addCustomer, updateCustomer } = useCustomerStore();
+  const { addCustomer, updateCustomer, getCustomer } = useCustomerStore();
   const { isLoading } = useLoadingAnimations();
 
   const form = useForm<CreateCustomer>({
     resolver: zodResolver(createCustomerSchema),
-    defaultValues: customer,
+    defaultValues: customerId
+      ? getCustomer(customerId)
+      : {
+          first_name: "",
+          last_name: "",
+          nick_name: "",
+          document: "",
+          plan_id: uuidv4(),
+          email: "",
+          phone: "",
+          address: "",
+          city: "",
+          country: "",
+          status: "ACTIVE",
+        },
   });
 
   function onSubmit(data: CreateCustomer) {
-    if (customer) {
-      updateCustomer(customer.id, data);
+    if (customerId) {
+      updateCustomer(customerId, data);
 
       toast.success("Cliente atualizado com sucesso");
     } else {
+      console.log(data);
       addCustomer(data);
 
       toast.success("Cliente adicionado com sucesso");
@@ -218,7 +233,7 @@ export function CustomerForm({
                 Cancelar
               </Button>
               <Button type="submit">
-                {customer ? "Atualizar" : "Adicionar"}
+                {customerId ? "Atualizar" : "Adicionar"}
               </Button>
             </div>
           </form>

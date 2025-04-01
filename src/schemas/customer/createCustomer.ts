@@ -14,18 +14,14 @@ export const createCustomerSchema = z.object({
     .optional(),
   last_name: z
     .string({
-      required_error: "Sobrenome é obrigatório",
       message: "Sobrenome invalido, forneça uma Sobrenome valido",
     })
-    .min(3, { message: "Sobrenome deve conter pelo menos 3 caracteres" })
-    .max(140, { message: "Sobrenome deve ter máximo 140 caracteres" }),
+    .optional(),
   nick_name: z
     .string({
-      required_error: "Apelido é obrigatório",
       message: "Apelido invalido, forneça uma Apelido valido",
     })
-    .min(3, { message: "Nome abreviado deve conter pelo menos 3 caracteres" })
-    .max(10, { message: "Nome abreviado nome deve ter máximo 140 caracteres" }),
+    .optional(),
   email: z
     .string({
       required_error: "Email é obrigatório",
@@ -38,13 +34,11 @@ export const createCustomerSchema = z.object({
     .string({
       message: "CPF invalido, forneça uma CPF valido",
     })
-    .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF inválido")
     .optional(),
   phone: z
     .string({
       message: "Telefone invalido, forneça uma Telefone valido",
     })
-    .regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, "Telefone inválido")
     .optional(),
   address: z
     .string({
@@ -63,11 +57,6 @@ export const createCustomerSchema = z.object({
       message: "Estado invalido, forneça uma Estado valido",
     })
     .length(2, "Estado inválido"),
-  zip: z
-    .string({
-      message: "CEP invalido, forneça uma CEP valido",
-    })
-    .optional(),
   country: z
     .string({
       required_error: "Estado é obrigatório",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -48,6 +49,8 @@ import {
   CardTitle,
 } from "../ui/card";
 import { EmptyList } from "../ui/empty-list";
+import { Badge } from "../ui/badge";
+import { CustomerStatus } from "@/types/customer-status";
 
 export function CustomerList() {
   const router = useRouter();
@@ -61,6 +64,18 @@ export function CustomerList() {
     deleteCustomer(id);
     setCustomerToDelete(null);
     toast.success("Client deleted successfully");
+  };
+
+  const statusLabel: Record<CustomerStatus, string> = {
+    ACTIVE: "Ativo",
+    BLOCKED: "Bloqueado",
+    INACTIVE: "Inativo",
+  };
+
+  const statusVariant: Record<CustomerStatus, string> = {
+    ACTIVE: "default",
+    BLOCKED: "destructive",
+    INACTIVE: "secondary",
   };
 
   return (
@@ -142,9 +157,9 @@ export function CustomerList() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Telefone</TableHead>
-                  <TableHead>Endereço</TableHead>
+                  <TableHead className="text-center">Email</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Endereço</TableHead>
                   <TableHead className="w-[100px]">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -159,13 +174,19 @@ export function CustomerList() {
                 ) : (
                   getCustomersFiltered(searchTerm).map((customer) => (
                     <TableRow key={customer.id}>
-                      <TableCell className="font-medium">
-                        {customer.name} {customer.lastName}
-                      </TableCell>
-                      <TableCell>{customer.email}</TableCell>
-                      <TableCell>{customer.telephone}</TableCell>
                       <TableCell>
-                        {customer.city}, {customer.state}
+                        {customer.first_name} {customer.last_name}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {customer.email}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant={statusVariant[customer.status] as any}>
+                          {statusLabel[customer.status]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {customer.city}, {customer.uf}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -177,7 +198,7 @@ export function CustomerList() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() =>
-                                router.push(`/customer/${customer.id}`)
+                                router.push(`/customers/edit/${customer.id}`)
                               }
                             >
                               <Edit className="h-4 w-4 mr-2" />

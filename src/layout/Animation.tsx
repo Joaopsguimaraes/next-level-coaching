@@ -10,7 +10,7 @@ export function AnimationContainer({ children }: PropsWithChildren) {
   return (
     <div
       className={cn(
-        "flex-1 p-6 overflow-auto",
+        "flex-1 p-5 overflow-auto",
         isLoading ? "opacity-0" : "opacity-100 animate-fade-in"
       )}
     >
