@@ -33,10 +33,10 @@ export function DashboardTitle() {
           isLoading ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
         )}
       >
-        <Button onClick={() => router.push("/customers/new")}>
+        <Button variant="outline" onClick={() => router.push("/customer/new")}>
           <UserRoundPlus className="mr-2 h-4 w-4" /> Adicionar cliente
         </Button>
-        <Button onClick={() => router.push("/protocols/new")}>
+        <Button variant="outline" onClick={() => router.push("/protocol/new")}>
           <FilePlus className="mr-2 h-4 w-4" /> Novo protocolo
         </Button>
       </div>

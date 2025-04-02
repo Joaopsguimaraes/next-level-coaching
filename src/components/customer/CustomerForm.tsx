@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/card";
 import { AddressForm } from "./AddressForm";
 import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
+import { ImagePicker } from "../ui/image-picker";
 
 interface CustomerFormProps {
   title: string;
@@ -49,6 +51,7 @@ export function CustomerForm({
   const router = useRouter();
   const { addCustomer, updateCustomer, getCustomer } = useCustomerStore();
   const { isLoading } = useLoadingAnimations();
+  const [multipleImages, setMultipleImages] = useState<File[]>([]);
 
   const form = useForm<CreateCustomer>({
     resolver: zodResolver(createCustomerSchema),
@@ -84,10 +87,13 @@ export function CustomerForm({
     if (onSuccess) {
       onSuccess();
     } else {
-      router.push("/customers");
+      router.push("/customer");
     }
   }
 
+  const handleMultipleImageSelect = (files: File[]) => {
+    setMultipleImages(files);
+  };
   return (
     <Card
       className={cn(
@@ -114,6 +120,9 @@ export function CustomerForm({
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <strong>Informações gerais</strong>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
@@ -224,15 +233,38 @@ export function CustomerForm({
               <AddressForm form={form} />
             </div>
 
+            <div className="flex flex-col gap-5">
+              <strong>Imagens</strong>
+              <ImagePicker
+                onImageSelect={handleMultipleImageSelect}
+                multiple={true}
+              />
+              {multipleImages.length > 0 && (
+                <div className="p-4 border rounded-lg">
+                  <p className="font-medium">
+                    Selected Images ({multipleImages.length}):
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    {multipleImages.map((file, index) => (
+                      <li key={index} className="text-sm text-muted-foreground">
+                        {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/customers")}
+                className="min-w-32"
+                onClick={() => router.push("/customer")}
               >
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button className="min-w-32" type="submit">
                 {customerId ? "Atualizar" : "Adicionar"}
               </Button>
             </div>

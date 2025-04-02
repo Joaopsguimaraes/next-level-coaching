@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -19,14 +18,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
+  ClipboardListIcon,
   Edit,
+  FileText,
   MoreVertical,
   Plus,
   Trash2,
-  ClipboardList,
-  UserX,
-  UsersIcon,
 } from "lucide-react";
+import { format } from "date-fns";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,44 +37,67 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { generatePDF } from "@/lib/pdf-generator";
 import { useRouter } from "next/navigation";
+import { useProtocolStore } from "@/store/useProtocol";
 import { useCustomerStore } from "@/store/useCustomer";
-import { useLoadingAnimations } from "@/hooks/use-loading-animations";
-import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { EmptyList } from "@/components/ui/empty-list";
-import { Badge } from "@/components/ui/badge";
-import { CustomerStatus } from "@/types/customer-status";
+} from "../ui/card";
+import { cn } from "@/lib/utils";
+import { useLoadingAnimations } from "@/hooks/use-loading-animations";
+import { EmptyList } from "../ui/empty-list";
 
-export function CustomerList() {
+export function ProtocolsList() {
   const router = useRouter();
   const { isLoading } = useLoadingAnimations();
-  const { deleteCustomer, getCustomersFiltered } = useCustomerStore();
+  const { protocols, deleteProtocol, getProtocol, markProtocolSent } =
+    useProtocolStore();
+  const { customers } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");
-  const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
+  const [protocolToDelete, setProtocolToDelete] = useState<string | null>(null);
+
+  // Add client names to protocols
+  const protocolsWithClients = protocols.map((protocol) => {
+    const client = customers.find((c) => c.id === protocol.customerId);
+    return {
+      ...protocol,
+      clientName: client
+        ? `${client.first_name} ${client.last_name}`
+        : "Cliente desconhecido",
+    };
+  });
+
+  const filteredProtocols = protocolsWithClients.filter((protocol) =>
+    protocol.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleDelete = (id: string) => {
-    deleteCustomer(id);
-    setCustomerToDelete(null);
-    toast.success("Cliente deletado com sucesso");
+    deleteProtocol(id);
+    setProtocolToDelete(null);
+    toast.success("Protocolo removido com sucesso!");
   };
 
-  const statusLabel: Record<CustomerStatus, string> = {
-    ACTIVE: "Ativo",
-    BLOCKED: "Bloqueado",
-    INACTIVE: "Inativo",
-  };
+  const handleGeneratePDF = async (protocolId: string) => {
+    try {
+      const protocol = getProtocol(protocolId);
+      if (!protocol) {
+        toast.error("Protocolo não encontrado");
+        return;
+      }
 
-  const statusVariant: Record<CustomerStatus, string> = {
-    ACTIVE: "default",
-    BLOCKED: "destructive",
-    INACTIVE: "secondary",
+      await generatePDF(protocol);
+      markProtocolSent(protocolId);
+      toast.success("PDF do protocolo gerado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast.error("Falha ao gerar PDF!");
+    }
   };
 
   return (
@@ -100,8 +122,8 @@ export function CustomerList() {
                 : "translate-y-0 opacity-100"
             )}
           >
-            <UsersIcon />
-            Clientes
+            <ClipboardListIcon />
+            Protocolos
           </CardTitle>
           <CardDescription
             className={cn(
@@ -111,9 +133,8 @@ export function CustomerList() {
                 : "translate-y-0 opacity-100"
             )}
           >
-            Gerencie os clientes cadastrados no sistema
+            Gerencie os protocolos cadastrados no sistema
           </CardDescription>
-
           <div
             className={cn(
               "flex w-full justify-between items-center transform transition-all duration-500 delay-200",
@@ -124,18 +145,18 @@ export function CustomerList() {
           >
             <div className="flex-1 max-w-sm">
               <Input
-                placeholder="Pesquise os clientes..."
+                placeholder="Pesquisar protocolos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
               />
             </div>
             <Button
-              onClick={() => router.push("/customer/new")}
+              onClick={() => router.push("/protocol/new")}
               className="transition-all hover:shadow-md"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar cliente
+              <Plus className="size-4 mr-2" />
+              Novo protocolo
             </Button>
           </div>
         </CardHeader>
@@ -149,42 +170,48 @@ export function CustomerList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead className="text-center">Email</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-center">Endereço</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Data de inicio</TableHead>
+                <TableHead>Data fim</TableHead>
+                <TableHead>Duração</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
-
             <TableBody>
-              {getCustomersFiltered(searchTerm).length === 0 ? (
+              {filteredProtocols.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={6} className="h-32">
                     <EmptyList
-                      message="Não foram encontrados clientes"
+                      message="Não foram encontrados protocolos"
                       icon={
-                        <UserX className="h-20 w-20 text-muted-foreground/40 stroke-[1.25]" />
+                        <ClipboardListIcon className="h-20 w-20 text-muted-foreground/40 stroke-[1.25]" />
                       }
                     />
                   </TableCell>
                 </TableRow>
               ) : (
-                getCustomersFiltered(searchTerm).map((customer) => (
-                  <TableRow key={customer.id}>
+                filteredProtocols.map((protocol) => (
+                  <TableRow key={protocol.id}>
+                    <TableCell className="font-medium">
+                      {protocol.clientName}
+                    </TableCell>
                     <TableCell>
-                      {customer.first_name} {customer.last_name}
+                      {format(new Date(protocol.startDate), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="text-center">
-                      {customer.email}
+                    <TableCell>
+                      {format(new Date(protocol.endDate), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={statusVariant[customer.status] as any}>
-                        {statusLabel[customer.status]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {customer.city}, {customer.uf}
+                    <TableCell>{protocol.durationDays} days</TableCell>
+                    <TableCell>
+                      {protocol.sentAt ? (
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                          Enviado em{" "}
+                          {format(new Date(protocol.sentAt), "MMM d")}
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">Rascunho</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
@@ -196,25 +223,21 @@ export function CustomerList() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() =>
-                              router.push(`/customer/edit/${customer.id}`)
+                              router.push(`/protocol/${protocol.id}`)
                             }
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() =>
-                              router.push(
-                                `/protocol/new?customerId=${customer.id}`
-                              )
-                            }
+                            onClick={() => handleGeneratePDF(protocol.id)}
                           >
-                            <ClipboardList className="h-4 w-4 mr-2" />
-                            Criar Protocolo
+                            <FileText className="h-4 w-4 mr-2" />
+                            Gerar PDF
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            onClick={() => setCustomerToDelete(customer.id)}
+                            onClick={() => setProtocolToDelete(protocol.id)}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Deletar
@@ -229,24 +252,23 @@ export function CustomerList() {
           </Table>
         </CardContent>
       </Card>
-
       <AlertDialog
-        open={!!customerToDelete}
-        onOpenChange={() => setCustomerToDelete(null)}
+        open={!!protocolToDelete}
+        onOpenChange={() => setProtocolToDelete(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Voce tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação não pode ser desfeita, ela irá deletar o cliente e todos
-              os protocolos associados.
+              Essa ação não pode ser desfeita. Vai remover permanente esse
+              protocolo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => customerToDelete && handleDelete(customerToDelete)}
+              onClick={() => protocolToDelete && handleDelete(protocolToDelete)}
             >
               Deletar
             </AlertDialogAction>

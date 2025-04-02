@@ -53,8 +53,8 @@ export interface Diet {
 
 export interface Protocol {
   id: string;
-  clientId: string;
-  client?: Customer;
+  customerId: string;
+  customer?: Customer;
   diet: Diet;
   workouts: Workout[];
   supplementation: Supplement[];

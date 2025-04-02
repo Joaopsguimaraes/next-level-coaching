@@ -2,6 +2,7 @@
 
 import {
   ClipboardListIcon,
+  ClipboardSignatureIcon,
   DatabaseIcon,
   Dumbbell,
   FileUser,
@@ -42,13 +43,18 @@ const data = {
     },
     {
       title: "Clientes",
-      url: "/customers",
+      url: "/customer",
       icon: UsersIcon,
     },
     {
       title: "Protocolos",
-      url: "/protocols",
+      url: "/protocol",
       icon: ClipboardListIcon,
+    },
+    {
+      title: "Anamneses",
+      url: "/anamnese",
+      icon: ClipboardSignatureIcon,
     },
     {
       title: "Arquivos",
@@ -77,12 +83,12 @@ const data = {
     },
     {
       name: "Protocolos",
-      url: "/reports/protocols",
+      url: "/reports/protocol",
       icon: ClipboardListIcon,
     },
     {
       name: "Clientes",
-      url: "/reports/customers",
+      url: "/reports/customer",
       icon: FileUser,
     },
   ],
@@ -90,30 +96,33 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <Sidebar collapsible="offcanvas" className="bg-primary" {...props}>
+      <SidebarHeader className="bg-primary">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 bg-primary hover:bg-primary/90"
+              variant="outline"
             >
               <Link href="/dashboard">
                 <div className="flex items-center space-x-2">
-                  <Dumbbell className="h-6 w-6 text-primary" />
-                  <h1 className="text-xl font-bold text-primary">Next Level</h1>
+                  <Dumbbell className="h-6 w-6 text-primary-foreground" />
+                  <h1 className="text-xl font-bold text-primary-foreground">
+                    Next Level
+                  </h1>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-primary">
         <NavMain items={data.navMain} />
         <NavDocuments items={data.reports} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-primary">
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>

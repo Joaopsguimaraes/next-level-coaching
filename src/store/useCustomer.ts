@@ -45,7 +45,7 @@ export const useCustomerStore = create<CustomerStore>()(
       getCustomer: (id) => get().customers.find((client) => client.id === id),
       getCustomerProtocols: (clientId) => {
         const customerProtocols = protocols.filter(
-          (protocol) => protocol.clientId === clientId
+          (protocol) => protocol.customerId === clientId
         );
         return customerProtocols;
       },

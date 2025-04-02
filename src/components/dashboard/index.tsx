@@ -132,7 +132,7 @@ export function Dashboard() {
                   >
                     <div>
                       <p className="font-medium">
-                        {customersMap[protocol.clientId] || "Unknown Client"}
+                        {customersMap[protocol.customerId] || "Unknown Client"}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {protocol.durationDays} Dia do protocolo - Criado em:{" "}
@@ -142,7 +142,7 @@ export function Dashboard() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => router.push(`/protocols/${protocol.id}`)}
+                      onClick={() => router.push(`/protocol/${protocol.id}`)}
                     >
                       Visualizar
                     </Button>
@@ -167,7 +167,7 @@ export function Dashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start text-left"
-                onClick={() => router.push("/customers")}
+                onClick={() => router.push("/customer")}
               >
                 <Users className="mr-2 h-4 w-4" />
                 Ver todos clientes
@@ -175,7 +175,7 @@ export function Dashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start text-left"
-                onClick={() => router.push("/protocols")}
+                onClick={() => router.push("/protocol")}
               >
                 <ClipboardList className="mr-2 h-4 w-4" />
                 Ver todos protocolos
@@ -183,7 +183,7 @@ export function Dashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start text-left"
-                onClick={() => router.push("/customers/new")}
+                onClick={() => router.push("/customer/new")}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Registrar novo cliente
@@ -191,7 +191,7 @@ export function Dashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start text-left"
-                onClick={() => router.push("/protocols/new")}
+                onClick={() => router.push("/protocol/new")}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Criar novo protocolo

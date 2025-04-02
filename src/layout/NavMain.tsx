@@ -29,7 +29,7 @@ export function NavMain({
   const router = useRouter();
 
   const handleProtocols = () => {
-    router.push("/protocols/new");
+    router.push("/protocol/new");
   };
 
   return (
@@ -40,14 +40,14 @@ export function NavMain({
             <SidebarMenuButton
               tooltip="Criar protocolo"
               onClick={handleProtocols}
-              className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+              className="min-w-8 bg-white text-primary duration-200 ease-linear hover:bg-white/90 hover:text-primary active:bg-primary-foreground/90 active:text-foreground"
             >
               <PlusCircleIcon />
               <span>Criar protocolo</span>
             </SidebarMenuButton>
             <Button
               size="icon"
-              className="h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0"
+              className="h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0 text-primary"
               variant="outline"
               onClick={handleProtocols}
             >
@@ -62,7 +62,8 @@ export function NavMain({
               <Link href={item.url}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className="cursor-pointer"
+                  className="cursor-pointer bg-primary text-white"
+                  variant="outline"
                 >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
